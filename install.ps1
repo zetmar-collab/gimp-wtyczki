@@ -1,6 +1,7 @@
 # Instaluje wtyczki z tego folderu do GIMP 3.x (Windows):
 #   podpis-zdjecia – „Podpis na zdjęciu”
 #   meme-maker     – „Kreator memów” (+ czcionka Anton do folderu czcionek GIMP-a)
+#   lut-cube       – „LUT-y (.cube)” (bez plików .cube – te importujesz we wtyczce)
 # Użycie:  powershell -ExecutionPolicy Bypass -File .\install.ps1 [-Version 3.2] [-Plugin meme-maker]
 param(
     [string]$Version,
@@ -8,7 +9,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$known = @("podpis-zdjecia", "meme-maker")
+$known = @("podpis-zdjecia", "meme-maker", "lut-cube")
 $gimpRoot = Join-Path $env:APPDATA "GIMP"
 
 if (-not $Plugin) {
@@ -48,6 +49,22 @@ foreach ($name in $Plugin) {
         Copy-Item (Join-Path $src "fonts\OFL.txt") (Join-Path $fonts "Anton-OFL.txt") -Force
         Write-Host "Czcionka Anton skopiowana do: $fonts"
     }
+
+    if ($name -eq "lut-cube") {
+        # Pliki .cube NIE są kopiowane. Jeśli obok skryptu jest folder Luts,
+        # zapisujemy tylko jego ścieżkę – wtyczka zaproponuje import startowy.
+        $luts = Get-ChildItem $PSScriptRoot -Directory |
+            Where-Object { $_.Name -ieq "Luts" } | Select-Object -First 1
+        if ($luts) {
+            $hint = Join-Path $dest "lut-cube\startup-dir.txt"
+            Set-Content $hint $luts.FullName -Encoding utf8
+            Write-Host "Folder importu startowego LUT-ow: $($luts.FullName)"
+        }
+        if (-not (Test-Path (Join-Path $src "vendor\VENDOR.json"))) {
+            Write-Host "Uwaga: brak numpy w lut-cube\vendor - wtyczka zadziala wolniej."
+            Write-Host "Szybki wariant: powershell -ExecutionPolicy Bypass -File .\tools\fetch-numpy.ps1"
+        }
+    }
 }
 
-Write-Host "Uruchom ponownie GIMP. Menu: Filtry -> Podpis / Filtry -> Memy."
+Write-Host "Uruchom ponownie GIMP. Menu: Filtry -> Podpis / Filtry -> Memy / Filtry -> LUT."

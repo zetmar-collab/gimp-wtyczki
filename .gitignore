@@ -3,3 +3,10 @@ __pycache__/
 .pytest_cache/
 dist/
 SPEC_*.md
+# Wtyczka LUT: komercyjne pliki .cube nigdy nie trafiają do repo
+Luts/
+*.cube
+# numpy dołączany do paczki wydania (tools/fetch-numpy.ps1), nie do repo
+lut-cube/vendor/
+# lokalne zestawienie kontrolne wszystkich LUT-ów
+docs/lut-cube/local/

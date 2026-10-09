@@ -1,7 +1,10 @@
 # Podpis na zdjęciu – wtyczka GIMP 3
 
-> W tym repozytorium jest też druga wtyczka: **Kreator memów** (`meme-maker/`, GPL-3.0, Filtry → Memy). Opis: [meme-maker/README.md](meme-maker/README.md).
-> `install.ps1` bez parametrów instaluje wszystkie wtyczki leżące obok skryptu; jedną wybierzesz przez `-Plugin podpis-zdjecia` albo `-Plugin meme-maker`.
+> W tym repozytorium są też inne wtyczki:
+> - **Kreator memów** (`meme-maker/`, GPL-3.0, Filtry → Memy). Opis: [meme-maker/README.md](meme-maker/README.md).
+> - **LUT-y (.cube)** (`lut-cube/`, GPL-3.0, Filtry → LUT): nakładanie LUT-ów `.cube` z biblioteką, podglądem przed/po i siłą efektu. Opis: [lut-cube/README.md](lut-cube/README.md).
+>
+> `install.ps1` bez parametrów instaluje wszystkie wtyczki leżące obok skryptu; jedną wybierzesz przez `-Plugin podpis-zdjecia`, `-Plugin meme-maker` albo `-Plugin lut-cube`.
 
 Dodaje podpis na zdjęciu jako **nową warstwę na samej górze stosu**. Wtyczka ma dwa tryby:
 
