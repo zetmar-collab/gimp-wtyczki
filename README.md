@@ -1,5 +1,8 @@
 # Podpis na zdjęciu – wtyczka GIMP 3
 
+> W tym repozytorium jest też druga wtyczka: **Kreator memów** (`meme-maker/`, GPL-3.0, Filtry → Memy). Opis: [meme-maker/README.md](meme-maker/README.md).
+> `install.ps1` bez parametrów instaluje wszystkie wtyczki leżące obok skryptu; jedną wybierzesz przez `-Plugin podpis-zdjecia` albo `-Plugin meme-maker`.
+
 Dodaje podpis na zdjęciu jako **nową warstwę na samej górze stosu**. Wtyczka ma dwa tryby:
 
 - **Filtry → Podpis → Podpis tekstowy…** (`python-fu-podpis-tekst`) tworzy edytowalną warstwę tekstową.
