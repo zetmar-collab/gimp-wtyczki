@@ -1,10 +1,16 @@
-# Podpis na zdjęciu – wtyczka GIMP 3
+# Wtyczki GIMP 3
 
-> W tym repozytorium są też inne wtyczki:
-> - **Kreator memów** (`meme-maker/`, GPL-3.0, Filtry → Memy). Opis: [meme-maker/README.md](meme-maker/README.md), paczka: [meme-maker-v1.0.0](https://github.com/zetmar-collab/gimp-podpis-zdjecia/releases/tag/meme-maker-v1.0.0).
-> - **LUT-y (.cube)** (`lut-cube/`, GPL-3.0, Filtry → LUT): nakładanie LUT-ów `.cube` z biblioteką, podglądem przed/po i siłą efektu. Opis: [lut-cube/README.md](lut-cube/README.md), paczka: [lut-cube-v1.0.0](https://github.com/zetmar-collab/gimp-podpis-zdjecia/releases/tag/lut-cube-v1.0.0).
->
-> `install.ps1` bez parametrów instaluje wszystkie wtyczki leżące obok skryptu; jedną wybierzesz przez `-Plugin podpis-zdjecia`, `-Plugin meme-maker` albo `-Plugin lut-cube`.
+Darmowe wtyczki open source (GPL-3.0) do GIMP-a 3.x, napisane w Pythonie. Działają w pełni offline: bez kont, kluczy API i zbierania danych. Przetestowano na GIMP 3.2.6 (Windows 11).
+
+| Wtyczka | Menu | Opis | Paczka |
+|---|---|---|---|
+| **Podpis na zdjęciu** (`podpis-zdjecia/`) | Filtry → Podpis | podpis tekstowy albo logo jako nowa warstwa, 9 pozycji, rozmiar w % obrazu | [v1.0.0](https://github.com/zetmar-collab/gimp-wtyczki/releases/tag/v1.0.0) |
+| **Kreator memów** (`meme-maker/`) | Filtry → Memy | tekst górny i dolny z obrysem, pasek na tekst, eksport JPG/PNG. [Opis](meme-maker/README.md) | [v1.0.0](https://github.com/zetmar-collab/gimp-wtyczki/releases/tag/meme-maker-v1.0.0) |
+| **LUT-y (.cube)** (`lut-cube/`) | Filtry → LUT | LUT-y `.cube` z biblioteką, podglądem przed/po i siłą efektu. [Opis](lut-cube/README.md) | [v1.0.0](https://github.com/zetmar-collab/gimp-wtyczki/releases/tag/lut-cube-v1.0.0) |
+
+`install.ps1` bez parametrów instaluje wszystkie wtyczki leżące obok skryptu; jedną wybierzesz przez `-Plugin podpis-zdjecia`, `-Plugin meme-maker` albo `-Plugin lut-cube`.
+
+## Podpis na zdjęciu
 
 Dodaje podpis na zdjęciu jako **nową warstwę na samej górze stosu**. Wtyczka ma dwa tryby:
 
@@ -15,10 +21,10 @@ Całość jest jedną operacją cofania, więc jedno Ctrl+Z usuwa podpis. Istnie
 
 Przetestowano na GIMP 3.2.6 (Windows 11). Kod działa na każdym systemie i nie potrzebuje żadnych zewnętrznych bibliotek.
 
-## Instalacja (Windows)
+### Instalacja (Windows)
 
 Najprościej: pobierz `podpis-zdjecia-vX.Y.Z.zip` z zakładki
-[Releases](https://github.com/zetmar-collab/gimp-podpis-zdjecia/releases/tag/v1.0.0),
+[Releases](https://github.com/zetmar-collab/gimp-wtyczki/releases/tag/v1.0.0),
 rozpakuj i uruchom `install.ps1` (prawy przycisk → „Uruchom za pomocą programu PowerShell”)
 albo skopiuj folder `podpis-zdjecia` ręcznie (patrz niżej).
 
@@ -40,9 +46,9 @@ Ręcznie: skopiuj cały folder `podpis-zdjecia` do
 
 Linux/macOS: ścieżka `~/.config/GIMP/3.x/plug-ins/podpis-zdjecia/`, a plik musi mieć prawo wykonania (`chmod +x`).
 
-## Parametry
+### Parametry
 
-### Wspólne
+#### Wspólne
 
 | id | Opis | Domyślnie |
 |---|---|---|
@@ -54,7 +60,7 @@ Linux/macOS: ścieżka `~/.config/GIMP/3.x/plug-ins/podpis-zdjecia/`, a plik mus
 
 Margines nie działa w osi, w której pozycja to „środek”.
 
-### Podpis tekstowy
+#### Podpis tekstowy
 
 | id | Opis | Domyślnie |
 |---|---|---|
@@ -68,7 +74,7 @@ Margines nie działa w osi, w której pozycja to „środek”.
 
 Tryb procentowy sprawia, że podpis wygląda tak samo względem kadru na zdjęciu 1200 px i na 6000 px. `justify = auto` bierze wyrównanie z kolumny pozycji: lewa kolumna daje wyrównanie do lewej, środkowa do środka, prawa do prawej.
 
-### Podpis z obrazu
+#### Podpis z obrazu
 
 | id | Opis | Domyślnie |
 |---|---|---|
@@ -78,7 +84,7 @@ Tryb procentowy sprawia, że podpis wygląda tak samo względem kadru na zdjęci
 
 Proporcje przy skalowaniu są zachowane. Przy zmniejszaniu wtyczka używa interpolacji LoHalo, przy powiększaniu NoHalo. Jeśli podpis nie mieści się w zdjęciu razem z marginesem, zostaje proporcjonalnie zmniejszony, a GIMP pokazuje ostrzeżenie.
 
-## Wywołanie z PDB / skryptu (Python)
+### Wywołanie z PDB / skryptu (Python)
 
 ```python
 proc = Gimp.get_pdb().lookup_procedure("python-fu-podpis-tekst")
@@ -91,7 +97,7 @@ cfg.set_property("position", "bottom-right")
 proc.run(cfg)
 ```
 
-## Testy
+### Testy
 
 - Czyste funkcje (pozycja, marginesy, rozmiary), bez GIMP-a:
   ```
@@ -103,7 +109,7 @@ proc.run(cfg)
   ```
   Test sprawdza kryteria 2–6, 9 i 10 ze specyfikacji. Ostatni wynik: 37/37 PASS.
 
-## Znane ograniczenia i odstępstwa od specyfikacji
+### Znane ograniczenia i odstępstwa od specyfikacji
 
 - **Odstęp wokół tekstu.** Warstwa tekstowa ma wewnętrzny odstęp nad i pod literami (metryki fontu). Wizualny margines od dołu może więc wyjść nieco większy niż ustawiony.
 - **`ProcedureSensitivityMask.ALWAYS` nie istnieje** w API 3.x. Zamiast niego wtyczka używa `DRAWABLE | DRAWABLES | NO_DRAWABLES`, dzięki czemu działa przy jednej warstwie, kilku warstwach i bez zaznaczenia.
