@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Test integracyjny wtyczki LUT w prawdziwym GIMP-ie (bez okna). Uruchom:
+Test integracyjny wtyczki LUT w prawdziwym GIMP-ie (bez okna).
+Uruchom z folderu repozytorium:
   gimp-console-3.2.exe -i --batch-interpreter python-fu-eval ^
-      -b "exec(open(r'C:\\...\\tests\\gimp_lut_integration.py', encoding='utf-8').read())" --quit
+      -b "exec(open(r'tests\\gimp_lut_integration.py', encoding='utf-8').read())" --quit
 Wymaga zainstalowanej wtyczki (install.ps1 -Plugin lut-cube).
 Wynik w konsoli: PASS/FAIL dla każdego kroku i czasy działania.
 """
@@ -18,14 +19,13 @@ gi.require_version("Gimp", "3.0")
 gi.require_version("Gegl", "0.4")
 from gi.repository import Gimp, Gegl, Gio
 
-REPO = r"C:\Users\Marek\Claude\Gimp"
-sys.path.insert(0, os.path.join(REPO, "lut-cube"))
+sys.path.insert(0, os.path.join(os.environ.get("LUT_CUBE_REPO") or os.getcwd(),
+                                "tests"))
+import gimp_lut_helpers as helpers  # noqa: E402
 import cube_parser  # noqa: E402
 import lut_apply  # noqa: E402
 
-LUTS = os.path.join(REPO, "Luts")
-LUT_FILE = os.path.join(LUTS, sorted(f for f in os.listdir(LUTS)
-                                     if f.lower().endswith(".cube"))[0])
+LUT_FILE = helpers.cube_files()[0]
 PROC = "python-fu-lut-cube-apply"
 FMT = "R'G'B'A float"
 results = []

@@ -2,9 +2,9 @@
 """
 Test okna wtyczki LUT w procesie GIMP-a – okno budowane poza ekranem
 (Gtk.OffscreenWindow), akcje wywoływane tak jak przez przyciski/klawisze.
-Uruchom:
+Uruchom z folderu repozytorium:
   gimp-console-3.2.exe -i --batch-interpreter python-fu-eval ^
-      -b "exec(open(r'C:\\...\\tests\\gimp_lut_ui.py', encoding='utf-8').read())" --quit
+      -b "exec(open(r'tests\\gimp_lut_ui.py', encoding='utf-8').read())" --quit
 
 Biblioteka testowa powstaje w katalogu tymczasowym (prawdziwa biblioteka
 użytkownika nie jest ruszana). Zrzuty okna trafiają do docs/lut-cube/,
@@ -23,14 +23,20 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gimp, GimpUi, Gio, Gtk, Gdk, GdkPixbuf  # noqa: E402
 import cairo  # noqa: E402
 
-REPO = r"C:\Users\Marek\Claude\Gimp"
-PLUGIN_DIR = os.path.join(os.environ["APPDATA"], "GIMP", "3.2", "plug-ins",
-                          "lut-cube")       # ma startup-dir.txt z install.ps1
-IMG_DIR = os.path.join(tempfile.gettempdir(), "claude",
-                       "C--Users-Marek-Claude-Gimp",
-                       "d8876034-fa45-4d83-bfcb-61353e088c30", "scratchpad", "img")
+sys.path.insert(0, os.path.join(os.environ.get("LUT_CUBE_REPO") or os.getcwd(),
+                                "tests"))
+import gimp_lut_helpers as helpers  # noqa: E402
+
+REPO = helpers.REPO
 DOCS = os.path.join(REPO, "docs", "lut-cube")
-sys.path.insert(0, os.path.join(REPO, "lut-cube"))
+LUTS = helpers.luts_dir()
+N = len(helpers.cube_files())
+IMG_DIR = helpers.make_test_images()
+# Folder „wtyczki” z podpowiedzią importu startowego (jak po install.ps1).
+PLUGIN_DIR = os.path.join(helpers.TMP, "wtyczka")
+os.makedirs(PLUGIN_DIR, exist_ok=True)
+with open(os.path.join(PLUGIN_DIR, "startup-dir.txt"), "w", encoding="utf-8") as f:
+    f.write(LUTS)
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(errors="replace")
 
@@ -39,6 +45,11 @@ import library  # noqa: E402
 import lut_apply  # noqa: E402
 import sample_image  # noqa: E402
 import ui  # noqa: E402
+
+FIRST_NAME = library.short_name(
+    os.path.splitext(os.path.basename(helpers.cube_files()[0]))[0],
+    library.DEFAULT_PREFIX, True)          # np. „001 Faded Matinee”
+SEARCH = FIRST_NAME.split()[-1].lower()
 
 results = []
 
@@ -111,19 +122,19 @@ answers.append(1)                       # „Importuj”
 t = time.perf_counter()
 win = ui.LutWindow(PLUGIN_DIR, img, [layer], None, offscreen=True)
 pump(0.3)
-check("import startowy: 49 LUT-ów", len(win.lib.entries) == 49,
+check("import startowy: %d LUT-ów" % N, len(win.lib.entries) == N,
       str(len(win.lib.entries)))
 check("import startowy: komunikat podsumowania",
-      messages and "Dodano: 49" in messages[-1][1],
+      messages and "Dodano: %d" % N in messages[-1][1],
       messages[-1][1].replace("\n", " | ") if messages else "")
 names = [win.lib.display_name(k) for k in win.lib.query()]
-check("prefiks skrócony w nazwach", names[0] == "001 Faded Matinee", names[0])
+check("prefiks skrócony w nazwach", names[0] == FIRST_NAME, names[0])
 check("pliki .cube skopiowane do biblioteki",
-      len(os.listdir(os.path.join(lib_root, "luts"))) == 49)
+      len(os.listdir(os.path.join(lib_root, "luts"))) == N)
 ok = settle(win, 60)
 dt = time.perf_counter() - t
 thumbs = sum(1 for row in win.store if row[1] is not None)
-check("miniatury dla wszystkich 49 LUT-ów", ok and thumbs == 49,
+check("miniatury dla wszystkich LUT-ów", ok and thumbs == N,
       "%d miniatur, %.1f s od otwarcia okna" % (thumbs, dt))
 
 # 2. Wybór LUT-a → podgląd się zmienia
@@ -206,18 +217,18 @@ win.category_combo.set_active_id("cat:Ciepłe")
 pump(0.1)
 check("filtr kategorii", len(win.store) == 1)
 win.category_combo.set_active_id("")
-win.search.set_text("matinee")
+win.search.set_text(SEARCH)
 pump(0.5)
-check("wyszukiwarka", len(win.store) == 1 and "Matinee" in win.store[0][3],
+check("wyszukiwarka", len(win.store) == 1 and SEARCH in win.store[0][3].lower(),
       win.store[0][3] if len(win.store) else "")
 win.search.set_text("")
 pump(0.5)
 
 # 8. Duplikaty przy ponownym imporcie
-chosen.append([os.path.join(REPO, "Luts")])
+chosen.append([LUTS])
 win._on_add_folder()
 check("deduplikacja po hashu",
-      "Pominięto duplikaty (ta sama treść pliku): 49" in messages[-1][1])
+      "Pominięto duplikaty (ta sama treść pliku): %d" % N in messages[-1][1])
 
 # 9. Plik spoza biblioteki → nałożenie bez dodawania, potem dodanie
 tmp = os.path.join(tempfile.gettempdir(), "Własny LUT ż.cube")
@@ -231,9 +242,9 @@ chosen.append([tmp])
 win._on_load_file()
 settle(win)
 check("plik spoza biblioteki wybrany",
-      win.current_key == ui.FILE_PREFIX + tmp and len(win.lib.entries) == 49)
+      win.current_key == ui.FILE_PREFIX + tmp and len(win.lib.entries) == N)
 win._on_add_temp()
-check("„Dodaj do biblioteki”", len(win.lib.entries) == 50 and win.temp_path is None)
+check("„Dodaj do biblioteki”", len(win.lib.entries) == N + 1 and win.temp_path is None)
 
 # 10. Usuwanie (tylko z listy)
 win._on_remove = win._on_remove   # okno potwierdzenia – wywołujemy bibliotekę
@@ -242,7 +253,7 @@ path = win.lib.path(removed)
 win.lib.remove(removed, delete_file=True)
 win.current_key = None
 win._refill()
-check("usunięcie z pliku", not os.path.exists(path) and len(win.lib.entries) == 49)
+check("usunięcie z pliku", not os.path.exists(path) and len(win.lib.entries) == N)
 
 # 11. Nałożenie z okna (nowa warstwa, postęp) – LUT o zmienionej nazwie
 first = key
@@ -307,13 +318,17 @@ for name in ("alfa.png", "male.png", "16bit.png"):
 # 15. Profil inny niż sRGB → ostrzeżenie i konwersja
 img = Gimp.file_load(Gimp.RunMode.NONINTERACTIVE,
                      Gio.File.new_for_path(os.path.join(IMG_DIR, "male.png")))
-img.set_color_profile(Gimp.ColorProfile.new_from_file(Gio.File.new_for_path(
-    r"C:\Program Files\Common Files\Adobe\Color\Profiles\Recommended\AdobeRGB1998.icc")))
+ADOBE = (r"C:\Program Files\Common Files\Adobe\Color\Profiles\Recommended"
+         r"\AdobeRGB1998.icc")
+profile = (Gimp.ColorProfile.new_from_file(Gio.File.new_for_path(ADOBE))
+           if os.path.isfile(ADOBE) else Gimp.ColorProfile.new_rgb_srgb_linear())
+img.set_color_profile(profile)
 win = ui.LutWindow(PLUGIN_DIR, img, img.get_layers(), None, offscreen=True)
 settle(win)
-check("Adobe RGB: ostrzeżenie widoczne", win.srgb_bar.get_visible())
+check("profil %s: ostrzeżenie widoczne" % profile.get_label(),
+      win.srgb_bar.get_visible())
 win._on_convert_srgb(win.srgb_bar, 1)
-check("Adobe RGB: po konwersji sRGB", gimp_ops.profile_info(img)[0]
+check("po konwersji: sRGB, ostrzeżenie ukryte", gimp_ops.profile_info(img)[0]
       and not win.srgb_bar.get_visible())
 win.close()
 img.delete()
@@ -382,8 +397,8 @@ def sheet(keys, path, cols):
     return items, bad
 
 
-items, bad = sheet(keys, os.path.join(DOCS, "local", "kontrola-49-lutow.png"), cols)
-check("zestawienie: wszystkie 49 LUT-ów wczytane", len(items) == 50 and not bad,
+items, bad = sheet(keys, os.path.join(DOCS, "local", "kontrola-lutow.png"), cols)
+check("zestawienie: wszystkie LUT-y wczytane", len(items) == N + 1 and not bad,
       str(bad))
 flat = [lut_apply.to_rgba8(d) for _n, d in items]
 check("zestawienie: każdy LUT zmienia obraz",

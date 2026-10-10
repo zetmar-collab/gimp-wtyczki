@@ -164,11 +164,13 @@ Po użyciu okna *Filtry → Powtórz* nakłada ten sam LUT z tymi samymi ustawie
   ```
   python -m pytest tests/test_lut_cube.py
   ```
-- W GIMP-ie, bez okna (procedura, zaznaczenie, alfa, 16/32 bit, błędy, czas 24 Mpx). Wymaga zainstalowanej wtyczki:
+- W GIMP-ie, bez okna (procedura, zaznaczenie, alfa, 16/32 bit, błędy, czas 24 Mpx). Wymaga zainstalowanej wtyczki. Uruchom z folderu repozytorium:
   ```
-  "%LOCALAPPDATA%\Programs\GIMP 3\bin\gimp-console-3.2.exe" -i --batch-interpreter python-fu-eval -b "exec(open(r'C:\ścieżka\do\repo\tests\gimp_lut_integration.py', encoding='utf-8').read())" --quit
+  "%LOCALAPPDATA%\Programs\GIMP 3\bin\gimp-console-3.2.exe" -i --batch-interpreter python-fu-eval -b "exec(open(r'tests/gimp_lut_integration.py', encoding='utf-8').read())" --quit
   ```
-- Okno (budowane poza ekranem, akcje jak z przycisków i klawiszy, zrzuty do `docs/lut-cube/`): to samo polecenie z `tests\gimp_lut_ui.py`.
+- Okno (budowane poza ekranem, akcje jak z przycisków i klawiszy, zrzuty do `docs/lut-cube/`): to samo polecenie z `tests/gimp_lut_ui.py`.
+
+Obrazy testowe testy generują same. Jeśli w repo jest folder `Luts/` z plikami `.cube`, testy go używają; jeśli nie (jak w publicznym repo), generują kilka syntetycznych LUT-ów.
 
 ## Znane ograniczenia
 
