@@ -1,8 +1,8 @@
 # Podpis na zdjęciu – wtyczka GIMP 3
 
 > W tym repozytorium są też inne wtyczki:
-> - **Kreator memów** (`meme-maker/`, GPL-3.0, Filtry → Memy). Opis: [meme-maker/README.md](meme-maker/README.md).
-> - **LUT-y (.cube)** (`lut-cube/`, GPL-3.0, Filtry → LUT): nakładanie LUT-ów `.cube` z biblioteką, podglądem przed/po i siłą efektu. Opis: [lut-cube/README.md](lut-cube/README.md).
+> - **Kreator memów** (`meme-maker/`, GPL-3.0, Filtry → Memy). Opis: [meme-maker/README.md](meme-maker/README.md), paczka: [meme-maker-v1.0.0](https://github.com/zetmar-collab/gimp-podpis-zdjecia/releases/tag/meme-maker-v1.0.0).
+> - **LUT-y (.cube)** (`lut-cube/`, GPL-3.0, Filtry → LUT): nakładanie LUT-ów `.cube` z biblioteką, podglądem przed/po i siłą efektu. Opis: [lut-cube/README.md](lut-cube/README.md), paczka: [lut-cube-v1.0.0](https://github.com/zetmar-collab/gimp-podpis-zdjecia/releases/tag/lut-cube-v1.0.0).
 >
 > `install.ps1` bez parametrów instaluje wszystkie wtyczki leżące obok skryptu; jedną wybierzesz przez `-Plugin podpis-zdjecia`, `-Plugin meme-maker` albo `-Plugin lut-cube`.
 
@@ -18,7 +18,7 @@ Przetestowano na GIMP 3.2.6 (Windows 11). Kod działa na każdym systemie i nie 
 ## Instalacja (Windows)
 
 Najprościej: pobierz `podpis-zdjecia-vX.Y.Z.zip` z zakładki
-[Releases](https://github.com/zetmar-collab/gimp-podpis-zdjecia/releases/latest),
+[Releases](https://github.com/zetmar-collab/gimp-podpis-zdjecia/releases/tag/v1.0.0),
 rozpakuj i uruchom `install.ps1` (prawy przycisk → „Uruchom za pomocą programu PowerShell”)
 albo skopiuj folder `podpis-zdjecia` ręcznie (patrz niżej).
 
